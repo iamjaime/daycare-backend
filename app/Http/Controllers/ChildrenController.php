@@ -38,7 +38,6 @@ class ChildrenController extends Controller {
 			if($contact->pivot->pickup) {
 				$contact->relationship = $contact->pivot->relationship;
 				$contact->pickup = (bool)$contact->pivot->pickup;
-				unset($contact->pivot);
 				array_push($authorized_pickup, $contact);
 			}
 		}
@@ -134,7 +133,7 @@ class ChildrenController extends Controller {
 		->first();
 
 		$child->authorized_pickup = array_merge($this->authorized_pickup($child->parents), $this->authorized_pickup($child->emergencyContacts));
-		
+
 		return Response::json([
 			'success' => true,
 			'data' => $child
