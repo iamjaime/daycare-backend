@@ -50,6 +50,14 @@ class User extends Model implements AuthenticatableContract,
      */
     protected $hidden = ['password', 'remember_token'];
 
+    public $signin_rules = [
+        'email' => 'required|exists:users,email',
+        'password' => 'required'
+    ];
+
+    public $getFacilitiesRules = [
+        'userId' => 'required|exists:users,id'
+    ];
 
     public $create_rules = [
         'first_name' => 'required',
@@ -70,6 +78,11 @@ class User extends Model implements AuthenticatableContract,
         'childrenIds' => 'required|array'
     ];
 
+    public function facilites()
+    {
+        return $this->hasMany('facilites');
+    }
+
     /**
      * roles Handles different the pivot table relationship for user roles.
      * @return void
@@ -77,7 +90,8 @@ class User extends Model implements AuthenticatableContract,
     public function roles()
     {
         //withPivot(['id']) returns the selected fields on the pivot table.
-        return $this->belongsToMany('App\Role', 'user_roles', 'user_id', 'role_id')->withPivot(['id']);
+        return $this->belongsToMany('App\Role', 'user_roles', 'user_id', 'role_id')
+        ->withPivot(['id', 'facility_id']);
     }
 
     /**
