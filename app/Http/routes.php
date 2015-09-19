@@ -43,6 +43,8 @@ Route::group(['prefix' => 'api/v1', 'before' => 'auth.token', 'middleware' => 'c
 	//  http://localhost:8000/api/v1/child/1/contacts
 	Route::get('child/{id}/contacts', 'ChildrenController@contacts');
 	
+	Route::post('child/{id}/pickup', 'ChildrenController@pickup');
+
 	//attach/detach
 	Route::post('attach/parent', 'UserController@attachParent');
 	Route::post('attach/contact', 'UserController@attachContact');	

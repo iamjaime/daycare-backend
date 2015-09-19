@@ -8,6 +8,13 @@ class Children extends Model {
 
 	protected $fillable = ['first_name', 'last_name', 'dob', 'gender', 'blood_type'];
 
+	public $pickup_rules = [
+		'contactId' => 'required|exists:users,id',
+		'childId' => 'required|exists:children,id',
+		'isParent' => 'required|boolean',
+		'authorize' => 'required|boolean'
+	];
+
 	public $create_rules = [
 		'first_name' => 'required',
 		'last_name' => 'required',

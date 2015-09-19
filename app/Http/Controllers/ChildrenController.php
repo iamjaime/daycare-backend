@@ -12,13 +12,17 @@ use \Validator;
 use App\Children;
 use App\User;
 use App\ChildCheckin;
+use App\ChildParent;
+use App\ChildContact;
 
 class ChildrenController extends Controller {
 
-	public function __construct(Children $children, User $user, ChildCheckin $child_checkin){
+	public function __construct(Children $children, User $user, ChildCheckin $child_checkin, ChildContact $child_contact, ChildParent $child_parent){
 		$this->children = $children;
 		$this->checkin = $child_checkin;
 		$this->user = $user;
+		$this->child_parent = $child_parent;
+		$this->child_contact = $child_contact;
 		$this->facilityID = $this->getFacility();
 	}
 
@@ -57,11 +61,6 @@ class ChildrenController extends Controller {
 
 		foreach ($children as $child) {
 			$child->authorized_pickup = array_merge($this->authorized_pickup($child->parents), $this->authorized_pickup($child->emergencyContacts));
-			foreach ($child->emergencyContacts as $ec) {
-				$ec->relationship = $ec->pivot->relationship;
-				$ec->pickup = (bool)$ec->pivot->pickup;
-				unset($ec->pivot);
-			}
 		}
 
 
@@ -135,12 +134,7 @@ class ChildrenController extends Controller {
 		->first();
 
 		$child->authorized_pickup = array_merge($this->authorized_pickup($child->parents), $this->authorized_pickup($child->emergencyContacts));
-		foreach ($child->emergencyContacts as $ec) {
-			$ec->relationship = $ec->pivot->relationship;
-			$ec->pickup = (bool)$ec->pivot->pickup;
-			unset($ec->pivot);
-		}
-
+		
 		return Response::json([
 			'success' => true,
 			'data' => $child
@@ -359,6 +353,47 @@ class ChildrenController extends Controller {
 		return Response::json([
 			'success' => true,
 			'msg' => 'The child has been checked out.'
+		], 200);
+	}
+
+	public function pickup($id)
+	{
+		//Authorize/DeAuthorize child pickup
+		$data = Input::get('data');
+		$rules = $this->children->pickup_rules;
+
+		//validate....
+		$validator = Validator::make($data, $rules);
+		if ($validator->fails()){
+			$messages = $validator->messages();
+		    return Response::json([
+			    	'success' => false,
+			    	'error' => $messages
+		    	], 400);
+		}
+
+		//lets handle the pickup
+		if ($data['isParent']) {
+			$child = $this->child_parent
+			->where('facility_id', $this->facilityID)
+			->where('child_id', $data['childId'])
+			->where('user_id', $data['contactId'])
+			->firstOrFail();
+			$child->pickup = $data['authorize'];
+			$child->save();
+		}else{
+			$child = $this->child_contact
+			->where('facility_id', $this->facilityID)
+			->where('child_id', $data['childId'])
+			->where('user_id', $data['contactId'])
+			->firstOrFail();
+			$child->pickup = $data['authorize'];
+			$child->save();
+		}
+		
+		return Response::json([
+			'success' => true,
+			'msg' => 'The user has been authorized or deauthorized.'
 		], 200);
 	}
 }
