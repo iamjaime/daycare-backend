@@ -115,6 +115,22 @@ class UserTableSeeder extends Seeder {
 			'work_phone' => '(212) 222-2222',
 			'status' => 'active'
 		]);
+
+		//staff
+		User::create([
+			'first_name' => 'Staff',
+			'last_name' => 'Man',
+			'address' => '123 example street.',
+			'city' => 'New York',
+			'province' => 'NY',
+			'postal_code' => '10001',
+			'primary_phone' => '(212) 123-4567',
+			'alternate_phone' => '(212) 555-5555',
+			'work_phone' => '(212) 222-2222',
+			'email' => 'staff@man.com',
+			'password' => Hash::make('testing123'),
+			'status' => 'active'
+		]);
 	}
 
 }

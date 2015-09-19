@@ -14,6 +14,18 @@ class UserRoleTableSeeder extends Seeder {
 	public function run()
 	{
 		UserRole::create([
+			'user_id' => 1, //Dummy Man
+			'role_id' => 1, //Admin
+			'facility_id' => 1 //default
+		]);
+
+		UserRole::create([
+			'user_id' => 1, //Dummy Man
+			'role_id' => 1, //Admin
+			'facility_id' => 2 //default
+		]);
+
+		UserRole::create([
 			'user_id' => 2, //Jaime
 			'role_id' => 3, //parent
 			'facility_id' => 1 //default
@@ -21,12 +33,6 @@ class UserRoleTableSeeder extends Seeder {
 
 		UserRole::create([
 			'user_id' => 3, //Maria
-			'role_id' => 3, //parent
-			'facility_id' => 1 //default
-		]);
-
-		UserRole::create([
-			'user_id' => 2, //jaime
 			'role_id' => 3, //parent
 			'facility_id' => 1 //default
 		]);
@@ -52,6 +58,12 @@ class UserRoleTableSeeder extends Seeder {
 		UserRole::create([
 			'user_id' => 7, //Nina Lao MD
 			'role_id' => 5, //physician
+			'facility_id' => 1 //default
+		]);
+
+		UserRole::create([
+			'user_id' => 8, //Staff Man
+			'role_id' => 2, //staff
 			'facility_id' => 1 //default
 		]);
 	}

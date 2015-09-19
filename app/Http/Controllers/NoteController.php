@@ -5,18 +5,17 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Str;
-
-use App\Facility;
+use App\Note;
 
 use \Response;
 use \Input;
 use \Validator;
 
-class FacilityController extends Controller {
+class NoteController extends Controller {
 
-	public function __construct(Facility $facility){
-		$this->facility = $facility;
+	public function __construct(Note $note){
+		$this->facilityID = $this->getFacility();
+		$this->note = $note;
 	}
 
 	/**
@@ -26,11 +25,26 @@ class FacilityController extends Controller {
 	 */
 	public function index()
 	{
-		//Get All Facilities
-		$allFacilities = $this->facility->all();
+		//Get All Notes
+		$data = Input::get('data');
+		$allNotes = $this->note->where('facility_id', $this->facilityID)->where('child_id', $childId)->get();
 		return Response::json([
 			'success' => true,
-			'data' => $allFacilities
+			'data' => $allNotes
+		], 200);
+	}
+
+	/**
+	 * getChildNotes Gets all notes for a specific child
+	 * @param  int $id The child id
+	 * @return Response
+	 */
+	public function getChildNotes($id)
+	{
+		$allNotes = $this->note->where('facility_id', $this->facilityID)->where('child_id', $id)->get();
+		return Response::json([
+			'success' => true,
+			'data' => $allNotes
 		], 200);
 	}
 
@@ -53,7 +67,7 @@ class FacilityController extends Controller {
 	{
 		//Create New Client
 		$data = Input::get('data');
-		$rules = $this->facility->create_rules;
+		$rules = $this->note->create_rules;
 
 		//validate....
 		$validator = Validator::make($data, $rules);
@@ -65,19 +79,17 @@ class FacilityController extends Controller {
 		    	], 400);
 		}
 
-		//If validation success then insert record
-		//But first lets make a token...
-		$token = hash('sha256', Str::random(10),false);
-
-		$facility = new Facility;
-		$facility->user_id = $data['user_id'];
-		$facility->name = $data['name'];
-		$facility->api_auth_token = $token;
-		$facility->save();
+		$note = new Note;
+		$note->facility_id = $this->facilityID;
+		$note->staff_id = $data['staff_id'];
+		$note->child_id = $data['child_id'];
+		$note->title = $data['title'];
+		$note->note = $data['note'];
+		$note->save();
 
 		return Response::json([
 			'success' => true,
-			'data' => $data
+			'data' => $note
 		], 200);
 	}
 
@@ -89,7 +101,12 @@ class FacilityController extends Controller {
 	 */
 	public function show($id)
 	{
-		//
+		//Get All Notes
+		$note = $this->note->find($id)->where('facility_id', $this->facilityID)->first();
+		return Response::json([
+			'success' => true,
+			'data' => $note
+		], 200);
 	}
 
 	/**
@@ -113,9 +130,8 @@ class FacilityController extends Controller {
 	{
 		//Create New Client
 		$data = Input::get('data');
-		//Set the ignore id for validation.
-		$rules = $this->facility->updateRules($id);
-		
+		$rules = $this->note->update_rules;
+
 		//validate....
 		$validator = Validator::make($data, $rules);
 		if ($validator->fails()){
@@ -126,15 +142,13 @@ class FacilityController extends Controller {
 		    	], 400);
 		}
 
-		//If validation success then update record
-		//But first we should probably re-generate an auth token...
-		$token = hash('sha256', Str::random(10),false);
-
-		$facility = $this->facility->findOrFail($id);
-		$facility->user_id = $data['user_id'];
-		$facility->name = $data['name'];
-		$facility->api_auth_token = $token;
-		$facility->save();
+		$note = $this->note->find($id);
+		$note->facility_id = $this->facilityID;
+		$note->staff_id = $data['staff_id'];
+		$note->child_id = $data['child_id'];
+		$note->title = $data['title'];
+		$note->note = $data['note'];
+		$note->save();
 
 		return Response::json([
 			'success' => true,
@@ -150,6 +164,12 @@ class FacilityController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		//
+		$note = $this->note->find($id);
+		$note->delete();
+
+		return Response::json([
+			'success' => true,
+			'msg' => 'note successfully deleted.'
+		], 200);
 	}
 }

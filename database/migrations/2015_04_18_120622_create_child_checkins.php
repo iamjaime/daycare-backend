@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateChildContacts extends Migration {
+class CreateChildCheckins extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,9 +12,8 @@ class CreateChildContacts extends Migration {
 	 */
 	public function up()
 	{
-		//Child Contacts - Holds the child's authorized contacts for pick-up and for emergency purposes.
-		//This is a pivot table
-		Schema::create('child_contacts', function(Blueprint $table)
+		//Child Checkin
+		Schema::create('child_checkins', function(Blueprint $table)
 		{
 			$table->increments('id');
 			//Foreign Key Referencing the client_id on the clients table.
@@ -23,13 +22,12 @@ class CreateChildContacts extends Migration {
 			//Foreign Key Referencing the child_id on the childrens table.
 			$table->integer('child_id')->unsigned();
 			$table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
-
-			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
-			$table->string('relationship'); //Example: Brother, Sister, Aunt, Uncle, Etc.
-
-			$table->boolean('pickup')->default(false); //is Authorized to pickup child?
+			
+			$table->boolean('checked_in')->default(false); //Did child checkin?
+			$table->boolean('checked_out')->default(false); //Did child checkout?
+			
+			$table->timestamp('time_in')->nullable(); //what time checked in?
+			$table->timestamp('time_out')->nullable(); //what time checked out?
 
 		});
 	}
@@ -41,7 +39,7 @@ class CreateChildContacts extends Migration {
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('child_contacts');
+		Schema::dropIfExists('child_checkins');
 	}
 
 }

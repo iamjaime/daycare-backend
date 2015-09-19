@@ -27,6 +27,21 @@ class FacilitiesTableSeeder extends Seeder {
 			'logo_url' => 'http://placehold.it/350x65',
 			'api_auth_token' => $token
 		]);
+
+		$token2 = hash('sha256', Str::random(10),false);
+		
+		Facility::create([
+			'user_id' => 1,
+			'name' => 'Second Facility',
+			'address' => '123 dummy street.',
+			'city' => 'New York',
+			'province' => 'NY',
+			'postal_code' => '10001',
+			'primary_phone' => '(212) 123-4567',
+			'fax' => '(212) 555-5555',
+			'logo_url' => 'http://placehold.it/350x65',
+			'api_auth_token' => $token2
+		]);
 	}
 
 }

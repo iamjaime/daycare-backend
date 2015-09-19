@@ -21,8 +21,8 @@ class CreateNotes extends Migration {
 			$table->foreign('facility_id')->references('id')->on('facilities')->onDelete('cascade');
 			
 			//Foreign Key Referencing the user_id on the users table that took the note.
-			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->integer('staff_id')->unsigned();
+			$table->foreign('staff_id')->references('id')->on('users')->onDelete('cascade');
 
 			//Foreign Key Referencing the child_id on the childrens table.
 			$table->integer('child_id')->unsigned();

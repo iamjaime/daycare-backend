@@ -15,15 +15,17 @@ use App\Role;
 use App\Children;
 use App\ChildContact;
 use App\ChildPhysician;
+use App\Facility;
 
 class UserController extends Controller {
 
-	public function __construct(User $user, Children $children, ChildContact $child_contact, ChildPhysician $child_physician){
+	public function __construct(User $user, Children $children, ChildContact $child_contact, ChildPhysician $child_physician, Facility $facility){
 		$this->user = $user;
 		$this->children = $children;
 		$this->child_contact = $child_contact;
 		$this->child_physician = $child_physician;
 		$this->facilityID = $this->getFacility();
+		$this->facility = $facility;
 	}
 
 	/**
@@ -114,7 +116,15 @@ class UserController extends Controller {
 	 */
 	public function show($id)
 	{
-		//
+		$user = $this->user->find($id);
+		$roles = $user->roles()->first();
+		$user->role = $roles->type;
+
+		return Response::json([
+			'success' => true,
+			'data' => $user
+		], 200);
+
 	}
 
 	/**
@@ -202,6 +212,41 @@ class UserController extends Controller {
 	}
 
 	/**
+	 * getUserFacilities Handles getting the facilities that a user belongs to.
+	 * @return Response
+	 */
+	public function getUserFacilities(){
+		$data = Input::get('data');
+		$rules = $this->user->getFacilitiesRules;
+		//validate....
+		$validator = Validator::make($data, $rules);
+		if ($validator->fails()){
+			$messages = $validator->messages();
+		    return Response::json([
+			    	'success' => false,
+			    	'error' => $messages
+		    	], 400);
+		}
+		//after validation....
+		$user = $this->user->find($data['userId']);
+		$roles = $user->roles;
+		$user_facilities = [];
+
+		foreach($roles as $role){
+		 array_push($user_facilities, $role->pivot->facility_id);
+		}
+		
+		//get all facilities that this user belongs to.
+		$facilities = $this->facility->whereIn('id', $user_facilities)->get();
+
+		return Response::json([
+			'success' => true,
+			'data' => $facilities
+		], 200);	
+	}
+
+
+	/**
 	 * attachParent Handles attaching a child or children to a parent or parents.
 	 * @return [type]     [description]
 	 */
@@ -264,6 +309,7 @@ class UserController extends Controller {
 
 		return $output;
 	}
+
 
 	/**
 	 * validateParents Validates the parentIds to make sure the user role is a parent.

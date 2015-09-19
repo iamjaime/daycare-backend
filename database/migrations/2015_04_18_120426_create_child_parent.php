@@ -27,6 +27,9 @@ class CreateChildParent extends Migration {
 			$table->integer('child_id')->unsigned();
 			$table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
 			
+			$table->string('relationship'); //Example: Mom, Dad, Step Mom, Step Dad
+
+			$table->boolean('pickup')->default(true); //is Authorized to pickup child?
 		});
 	}
 
