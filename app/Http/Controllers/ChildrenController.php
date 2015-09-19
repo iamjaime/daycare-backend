@@ -231,22 +231,23 @@ class ChildrenController extends Controller {
 
 		foreach($parents as $parent){
 			$parent['relationship'] = $parent->pivot->relationship;
+			$parent['type'] = 'parent';
+			$parent['pickup'] = (bool)$parent->pivot->pickup;
 			unset($parent->pivot);
 			array_push($guardians, $parent);
 		}
 
 		foreach($emergencyContacts as $ec){
 			$ec['relationship'] = $ec->pivot->relationship;
+			$ec['type'] = 'emergency';
+			$ec['pickup'] = (bool)$ec->pivot->pickup;
 			unset($ec->pivot);
 			array_push($emergency, $ec);
 		}
 
 		return Response::json([
 			'success' => true,
-			'data' => [
-				'parents' => $guardians,
-				'emergency' => $emergency
-			]
+			'data' => array_merge($guardians, $emergency)
 		], 200);
 	}
 
