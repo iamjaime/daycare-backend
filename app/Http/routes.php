@@ -23,7 +23,7 @@ Route::controllers([
 /**
  * Child Care API 1.0 - Un-Authenticated Routes
  */
-Route::group(['prefix' => 'api/v1'], function(){
+Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function(){
 	Route::post('signin', 'SigninController@signin');
 	Route::post('user/facilities', 'UserController@getUserFacilities');
 });
@@ -31,7 +31,7 @@ Route::group(['prefix' => 'api/v1'], function(){
 /**
  * Child Care API 1.0 - Authenticated Routes
  */
-Route::group(['prefix' => 'api/v1', 'before' => 'auth.token'], function(){
+Route::group(['prefix' => 'api/v1', 'before' => 'auth.token', 'middleware' => 'cors'], function(){
 
 	Route::resource('user', 'UserController');
 	Route::resource('facility', 'FacilityController');
