@@ -359,6 +359,7 @@ class ChildrenController extends Controller {
 	{
 		//Authorize/DeAuthorize child pickup
 		$data = Input::get('data');
+		$data['childId'] = $id;
 		$rules = $this->children->pickup_rules;
 
 		//validate....
@@ -372,6 +373,25 @@ class ChildrenController extends Controller {
 		}
 
 		//lets handle the pickup
+		//check if we have atleast 1 Parent authorized to pickup child
+		if (!$data['authorize']) {
+			$check = $this->children
+			->where('children.id', $id)
+			->where('children.facility_id', $this->facilityID)
+			->leftJoin('child_parent', 'child_parent.child_id', '=', 'children.id')
+			->where('child_parent.pickup', true)
+			->select('relationship')
+			->count();
+
+			if ($check <= 1) {
+				return Response::json([
+			    	'success' => false,
+			    	'data' => $check,
+			    	'error' => ['authorize' => 'atleast 1 user must be authorized to pickup child!']
+		    	], 400);
+			}
+		}
+
 		if ($data['isParent']) {
 			$child = $this->child_parent
 			->where('facility_id', $this->facilityID)
