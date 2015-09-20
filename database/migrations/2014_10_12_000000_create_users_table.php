@@ -29,6 +29,7 @@ class CreateUsersTable extends Migration {
 			$table->enum('status', ['active', 'deactive'])->default('deactive');
 			$table->rememberToken();
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
