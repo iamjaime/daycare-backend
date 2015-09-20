@@ -415,4 +415,26 @@ class ChildrenController extends Controller {
 			'msg' => 'The user has been authorized or deauthorized.'
 		], 200);
 	}
+
+	/**
+	 * attendance          Gets the child's attendance record.
+	 * @param  int    $id  The Child's ID.
+	 * @return Response
+	 */
+	public function attendance($id)
+	{
+		$child = $this->checkin
+		->where('facility_id', $this->facilityID)
+		->where('child_id', $id)
+		->get();
+
+		foreach ($child as $attendance) {
+			$attendance->checked_in = (bool)$attendance->checked_in;
+			$attendance->checked_out = (bool)$attendance->checked_out;
+			//multiply unix timestamp by 1,000 for JS compatability
+			$attendance->time_in = strtotime($attendance->time_in) * 1000;
+			$attendance->time_out = strtotime($attendance->time_out) * 1000;
+		}
+		return $child;
+	}
 }

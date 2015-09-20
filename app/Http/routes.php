@@ -39,6 +39,7 @@ Route::group(['prefix' => 'api/v1', 'before' => 'auth.token', 'middleware' => 'c
 
 	Route::post('child/{id}/checkin', 'ChildrenController@checkin');
 	Route::post('child/{id}/checkout', 'ChildrenController@checkout');
+	Route::get('child/{id}/attendance', 'ChildrenController@attendance');
 
 	//  http://localhost:8000/api/v1/child/1/contacts
 	Route::get('child/{id}/contacts', 'ChildrenController@contacts');
