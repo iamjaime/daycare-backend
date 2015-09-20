@@ -31,7 +31,7 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'cors'], function(){
 /**
  * Child Care API 1.0 - Authenticated Routes
  */
-Route::group(['prefix' => 'api/v1', 'before' => 'auth.token', 'middleware' => 'cors'], function(){
+Route::group(['prefix' => 'api/v1', 'middleware' => ['cors', 'auth.token']], function(){
 
 	Route::resource('user', 'UserController');
 	Route::resource('facility', 'FacilityController');
