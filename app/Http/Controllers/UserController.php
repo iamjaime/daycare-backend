@@ -87,20 +87,15 @@ class UserController extends Controller {
 			], 400);
 		}
 		$roleID = $findRole->id;
-
-		unset($data['role']); //remove from array
-		foreach($data as $key => $val){
-			$user->{$key} = $val;
-			if($key == "password"){
-				$user->password = Hash::make($val);
-			}
-		}
 		
+		$user->fill($data);
 		$user->save();
 
 		//now that we have a user record, lets attach the pivot table and save the user.
 		$user->roles()->attach($roleID, ['facility_id' => $this->facilityID]);
 		
+		$children = $this->children->find($data['childId']);
+		$children->emergencyContacts()->attach($user->id, ['facility_id' => $this->facilityID, 'relationship' => $data['relationship']]);
 
 		return Response::json([
 			'success' => true,

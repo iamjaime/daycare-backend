@@ -78,6 +78,7 @@ class User extends Model implements AuthenticatableContract,
         'primary_phone' => 'required',
         'role' => 'required',
         'status' => 'required',
+        'childId' => 'required_if:role,parent,role,emergency_contact|exists:children,id',
         'email' => 'required_if:role,admin,role,parent,role,staff|email|unique:users', //required if not emergency_contact
         'password' => 'required_if:role,admin,role,parent,role,staff|min:8' //required if not emergency contact
     ];
