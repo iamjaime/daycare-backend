@@ -133,6 +133,7 @@ class ChildrenController extends Controller {
 		->first();
 
 		$child->authorized_pickup = array_merge($this->authorized_pickup($child->parents), $this->authorized_pickup($child->emergencyContacts));
+		$child->attendance = $this->attendance($id);
 
 		return Response::json([
 			'success' => true,
@@ -432,8 +433,8 @@ class ChildrenController extends Controller {
 			$attendance->checked_in = (bool)$attendance->checked_in;
 			$attendance->checked_out = (bool)$attendance->checked_out;
 			//multiply unix timestamp by 1,000 for JS compatability
-			$attendance->time_in = strtotime($attendance->time_in) * 1000;
-			$attendance->time_out = strtotime($attendance->time_out) * 1000;
+			$attendance->time_in = ($attendance->time_in) ? strtotime($attendance->time_in) * 1000 : null;
+			$attendance->time_out = ($attendance->time_out) ? strtotime($attendance->time_out) * 1000 : null;
 		}
 		return $child;
 	}
